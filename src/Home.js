@@ -1,72 +1,56 @@
 import React, {Component} from 'react';
-import {Query} from 'react-apollo';
-import {HOME_PAGE} from './queries';
-import Animation from './Animation';
-import './Home.css';
+import {Sort} from './constant/Sort';
+import AnimationList from "./AnimationList";
+import Title from "./Title";
+import {MediaSeason} from "./constant/MediaSeason";
 
 class Home extends Component {
-    handleChange = e => {
-        if (e.keyCode === 13) {
-            const newStatus = {};
-            Object.assign(newStatus, {
-                search: e.target.value
-            }, this.state);
-            this.setState(newStatus)
-        }
+    state = {
+        search: null,
+        isAdult: false,
+        sort: Sort.START_DATE_DESC,
     };
+
+    _getYear() {
+        const date = new Date();
+        return date.getFullYear();
+    }
+
+    _getSeason() {
+        const date = new Date();
+        const month = date.getMonth() + 1;
+        let season;
+        if (month >= 3 && month <= 5) {
+            season = MediaSeason.SPRING;
+        } else if (month >= 6 && month <= 8) {
+            season = MediaSeason.SUMMER;
+        } else if (month >= 9 && month <= 11) {
+            season = MediaSeason.FALL;
+        } else {
+            season = MediaSeason.WINTER;
+        }
+
+        return season;
+    }
 
     render() {
         return (
             <div>
-                <input type='text' onKeyUp={this.handleChange} />
-                <div className='Home'>
-                    <Query
-                        query={HOME_PAGE}
-                        variables={this.state}>
-                        {({loading, data, error}) => {
-                            if (loading) return 'loading';
-                            if (error) return 'something happened';
-                            if (data) {
-                                const page = data.Page;
-                                const media = page.media;
-                                return media.map(animation => <Animation
-                                        key={animation.id}
-                                        id={animation.id}
-                                        title={animation.title.romaji}
-                                        popularity={animation.popularity}
-                                        coverImage={animation.coverImage.large}
-                                    />
-                                );
-                            }
-                        }}
-                    </Query>
-                </div>
+                <Title title='Trend'/>
+                <AnimationList sort={Sort.TRENDING_DESC} />
+                <Title title='Season'/>
+                <AnimationList
+                    sort={Sort.START_DATE}
+                    seasonYear={this._getYear()}
+                    season={this._getSeason()}
+                />
+                <Title title='Most Popular'/>
+                <AnimationList
+                    sort={Sort.POPULARITY_DESC}
+                />
             </div>
         );
     }
 }
-
-/*const Home = () => (
-    <div className='Home'>
-        <Query query={HOME_PAGE}>
-            {({loading, data, error}) => {
-                if (loading) return 'loading';
-                if (error) return 'something happened';
-                if (data) {
-                    const page = data.Page;
-                    const media = page.media;
-                    return media.map(animation => <Animation
-                            key={animation.id}
-                            id={animation.id}
-                            title={animation.title.romaji}
-                            popularity={animation.popularity}
-                            coverImage={animation.coverImage.large}
-                        />
-                    );
-                }
-            }}
-        </Query>
-    </div>
-);*/
 
 export default Home;

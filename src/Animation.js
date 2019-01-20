@@ -1,41 +1,60 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import styled from "styled-components";
+import {Card, CardHeader, CardMedia} from "@material-ui/core";
+import LinesEllipsis from "react-lines-ellipsis";
+import * as PropTypes from "prop-types";
 
-const Card = styled.div`
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  background-image: ${props => `url(${props.background})`};
-  background-size: cover;
-  background-position: center center;
-  height: 300px;
-  width: 200px;
-  margin-bottom: 40px;
-  position: relative;
-`;
+const styles = {
+    card: {
+        width: 260,
+        marginBottom: 40
+    },
+    cardImage: {
+        width: 260,
+        height: 320,
+    },
+    link: {
+        textDecoration: 'none',
+    },
+};
 
-const Title = styled.span`
-  background-color: white;
-  width: auto;
-  padding: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  position: absolute;
-  bottom: 25px;
-  left: 0;
-  right: 0;
-  margin: auto;
-`;
+const Animation = ({id, title, subTitle, popularity, src}) => {
+    const titleEllipsis = <LinesEllipsis
+        text={title || ''}
+        maxLine='1'
+        ellipsis='...'
+        trimRight
+        basedOn='letters'
+    />;
 
-const Animation = ({id, title, popularity, coverImage}) => {
+    const subTitleEllipsis = <LinesEllipsis
+        text={subTitle || ''}
+        maxLine='1'
+        ellipsis='...'
+        trimRight
+        basedOn='letters'
+    />;
+
     return (
-        <Link to={`/details/${id}/`}>
-            <Card background={coverImage}>
-                <Title>
-                    {title} / {popularity}⭐️
-                </Title>
-            </Card>
-        </Link>
+        <Card style={styles.card}>
+            <Link to={`/details/${id}/`} style={styles.link}>
+                <CardMedia style={styles.cardImage}
+                           image={src}
+                           title={title}/>
+            </Link>
+            <CardHeader
+                title={titleEllipsis}
+                subheader={subTitleEllipsis}
+            />
+        </Card>
     )
-}
+};
+
+Animation.propTypes = {
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    subTitle: PropTypes.string,
+    src: PropTypes.string.isRequired
+};
 
 export default Animation;

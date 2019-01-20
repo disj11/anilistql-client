@@ -1,29 +1,15 @@
 import gql from 'graphql-tag';
 
-export const Genre = {
-    DRAMA: 'Drama',
-    ACTION: 'Action',
-    ADVENTURE: 'Adventure',
-    COMEDY: 'Comedy',
-    SCI_FI: 'Sci-Fi', // 공상과학
-    SUPERNATURAL: 'Supernatural',
-    FANTASY: 'Fantasy',
-    SPORTS: 'Sports',
-    ROMANCE: 'Romance',
-    HORROR: "Horror",
-    MYSTERY: "Mystery",
-    PSYCHOLOGICAL: "Psychological",
-    THRILLER: "Thriller"
-};
-Object.freeze(Genre);
-
-export const HOME_PAGE = gql`    
+export const ANIMATION_LIST = gql`
     query getAnimationList(
     $page: Int = 1,
     $perPage: Int = 20,
     $genre: String,
     $search: String,
-    $isAdult: Boolean,
+    $isAdult: Boolean = false,
+    $sort: [MediaSort] = START_DATE_DESC,
+    $season: MediaSeason,
+    $seasonYear: Int,
     ) {
         Page(page: $page, perPage: $perPage) {
             pageInfo {
@@ -33,7 +19,7 @@ export const HOME_PAGE = gql`
                 hasNextPage
                 perPage
             }
-            media(search: $search, genre: $genre, isAdult: $isAdult, sort: UPDATED_AT_DESC) {
+            media(search: $search, genre: $genre, isAdult: $isAdult, sort: $sort, season: $season, seasonYear: $seasonYear) {
                 id
                 title {
                     romaji
@@ -61,6 +47,38 @@ export const HOME_PAGE = gql`
     }
 `;
 
+export const ANIMATION_LIST_SEASON = gql`
+    query getAnimationList(
+    $page: Int = 1,
+    $perPage: Int = 20,
+    $season: [MediaSeason!]
+    $seasonYear: Int!
+    $isAdult: Boolean = false,
+    $sort: [MediaSort] = POPULARITY_DESC,
+    ) {
+        Page(page: $page, perPage: $perPage) {
+            pageInfo {
+                total
+                currentPage
+                lastPage
+                hasNextPage
+                perPage
+            }
+            media(search: $search, genre: $genre, isAdult: $isAdult, sort: $sort, season: $season, seasonYear: $seasonYear) {
+                id
+                title {
+                    romaji
+                    native
+                }
+                bannerImage
+                coverImage {
+                    large
+                }
+            }
+        }
+    }
+`;
+
 export const ANIMATION_DETAILS = gql`
     query getAnimationDetails($animationId: Int!) {
         Media(id: $animationId) {
@@ -75,6 +93,11 @@ export const ANIMATION_DETAILS = gql`
                 month
                 day
             }
+            endDate {
+                year
+                month
+                day
+            }
             genres
             bannerImage
             coverImage {
@@ -84,8 +107,24 @@ export const ANIMATION_DETAILS = gql`
             }
             popularity
             averageScore
-            meanScore
-            description
+            description(asHtml: false)
+            relations {
+                nodes {
+                    title {
+                        romaji
+                        native
+                    }
+                    coverImage {
+                        large
+                    }
+                    description(asHtml: false)
+                }
+            }
+            trailer {
+                id
+                site
+            }
+            siteUrl
         }
     }
 `;

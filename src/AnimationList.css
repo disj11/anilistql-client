@@ -1,4 +1,4 @@
-.Home {
+.AnimationList {
     display: grid;
     grid-template-columns: repeat(5, 0.7fr);
     flex-wrap: wrap;
@@ -6,25 +6,25 @@
 }
 
 @media (max-width: 1280px) {
-    .Home {
+    .AnimationList {
         grid-template-columns: repeat(4, 0.7fr);
     }
 }
 
 @media (max-width: 980px) {
-    .Home {
+    .AnimationList {
         grid-template-columns: repeat(3, 0.7fr);
     }
 }
 
 @media (max-width: 740px) {
-    .Home {
+    .AnimationList {
         grid-template-columns: repeat(2, 0.7fr);
     }
 }
 
 @media (max-width: 520px) {
-    .Home {
+    .AnimationList {
         grid-template-columns: repeat(1, 0.7fr);
     }
 }
